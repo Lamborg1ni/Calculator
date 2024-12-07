@@ -1,0 +1,15 @@
+#!/usr/bin/python3
+result = False
+equation = input('Введите уравнение')
+if '+' in equation:
+    result = int(equation[:equation.index('+')]) + int(equation[equation.index('+')+1:])
+elif '-' in equation:
+    result = int(equation[:equation.index('-')]) - int(equation[equation.index('-')+1:])
+elif '*' in equation:
+    result = int(equation[:equation.index('*')]) * int(equation[equation.index('*') + 1:])
+elif '/' in equation:
+    result = int(equation[:equation.index('/')]) / int(equation[equation.index('/')+1:])
+if result == False:
+    print('Invalid equation')
+else:
+    print(result)
