@@ -1,21 +1,40 @@
 #!/usr/bin/python3
 
-result = False
-equation = input('Введите простое уравнение: ')
-
-if '+' in equation:
-    result = int(equation[:equation.index('+')]) + int(equation[equation.index('+') + 1:])
-elif '-' in equation:
-    result = int(equation[:equation.index('-')]) - int(equation[equation.index('-') + 1:])
-elif '*' in equation:
-    result = int(equation[:equation.index('*')]) * int(equation[equation.index('*') + 1:])
-elif '/' in equation:
-    if int(equation[equation.index('/') + 1:]) != 0:
-        result = int(equation[:equation.index('/')]) / int(equation[equation.index('/') + 1:])
+equation = input("Enter equation: ").replace(" ", "")
+tokens, result, out, stack, operators = [], [], [], [], {'*': 0, '/': 0, '+': 1, '-': 1}
+operations = {
+    '+': lambda x, y: x + y,
+    '-': lambda x, y: x - y,
+    '*': lambda x, y: x * y,
+    '/': lambda x, y: x / y if y != 0 else 'Error'
+}
+digit = ''
+for elem in equation:
+    if elem.isdigit():
+        digit += elem
     else:
-        print("Нельзя делить на ноль.")
+        tokens.append(digit)
+        tokens.append(elem)
+        digit = ''
+tokens.append(digit)
+for elem in tokens:
+    if elem.isdigit():
+        out.append(elem)
+    elif elem in operators:
+        if len(stack) != 0 and operators[elem] >= operators[stack[-1]]:
+            out.extend(stack[::-1])
+            stack = []
+        stack.append(elem)
+    else:
+        print('invalid equation')
+        break
+out.extend(stack[::-1])
+for elem in out:
+    if elem.isdigit():
+        result.append(float(elem))
+    else:
+        current = operations[elem](result[-2], result[-1])
+        del result[-2:]
+        result.append(current)
 
-if result == False:
-    print('Ошибочное уравнение.')
-else:
-    print(f"Результат: {result}.")
+print(*result)
