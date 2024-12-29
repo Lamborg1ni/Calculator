@@ -1,40 +1,63 @@
 #!/usr/bin/python3
 
-equation = input("Enter equation: ").replace(" ", "")
-tokens, result, out, stack, operators = [], [], [], [], {'*': 0, '/': 0, '+': 1, '-': 1}
-operations = {
-    '+': lambda x, y: x + y,
-    '-': lambda x, y: x - y,
-    '*': lambda x, y: x * y,
-    '/': lambda x, y: x / y if y != 0 else 'Error'
-}
-digit = ''
-for elem in equation:
-    if elem.isdigit():
-        digit += elem
-    else:
-        tokens.append(digit)
-        tokens.append(elem)
-        digit = ''
-tokens.append(digit)
-for elem in tokens:
-    if elem.isdigit():
-        out.append(elem)
-    elif elem in operators:
-        if len(stack) != 0 and operators[elem] >= operators[stack[-1]]:
-            out.extend(stack[::-1])
-            stack = []
-        stack.append(elem)
-    else:
-        print('invalid equation')
-        break
-out.extend(stack[::-1])
-for elem in out:
-    if elem.isdigit():
-        result.append(float(elem))
-    else:
-        current = operations[elem](result[-2], result[-1])
-        del result[-2:]
-        result.append(current)
+def tokenization(equation):
+    tokens = []
+    digit = ''
 
-print(*result)
+    for elem in equation:
+        if elem.isdigit():
+            digit += elem
+        else:
+            tokens.append(digit)
+            tokens.append(elem)
+            digit = ''
+
+    tokens.append(digit)
+
+    return tokens
+
+def reverse_polish_notation(tokens):
+    out, stack = [], []
+    operators = {'*': 0, '/': 0, '+': 1, '-': 1}
+
+    for elem in tokens:
+        if elem.isdigit():
+            out.append(elem)
+        elif elem in operators:
+            if len(stack) != 0 and operators[elem] >= operators[stack[-1]]:
+                out.extend(stack[::-1])
+                stack = []
+            stack.append(elem)
+        else:
+            print('invalid equation')
+            break
+
+    out.extend(stack[::-1])
+
+    return out
+
+def calculating_equation(out):
+    result = []
+    operations = {
+        '+': lambda x, y: x + y,
+        '-': lambda x, y: x - y,
+        '*': lambda x, y: x * y,
+        '/': lambda x, y: x / y if y != 0 else 'Error'
+    }
+
+    for elem in out:
+        if elem.isdigit():
+            result.append(float(elem))
+        else:
+            current = operations[elem](result[-2], result[-1])
+            del result[-2:]
+            result.append(current)
+
+    return result[0]
+
+equation = input("Enter equation: ").replace(" ", "")
+tokens = tokenization(equation)
+out = reverse_polish_notation(tokens)
+result = calculating_equation(out)
+
+print(f'Answer: {result}')
